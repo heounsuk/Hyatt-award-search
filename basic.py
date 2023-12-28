@@ -17,34 +17,32 @@ def load_web(URL, df, dates):
         except:
             alert_page = True
 
+        room_locator = None
         if alert_page is True or alert_page is not None:
             try:
                 alert_text = alert_page.inner_text()
-                if 'Unfortunately, this hotel is not available' in alert_text:
-                    ua = []    
+                # TODO: handle it if needed.
             except:
                 try:
-                    ua = page.query_selector_all("//div[@class='p-rate-card  b-ph0@md']")
-                except:
-                    ua = []
+                    room_locator = page.locator('.room-rate-card')
+                except Exception as e:
+                    pass
         else:
             try:
-                ua = page.query_selector_all("//div[@class='p-rate-card  b-ph0@md']")
-            except:
-                ua = []
-                
-        if ua:
-            temp_title = page.query_selector("//div[@class='hotel-name-text b-text_display-1 b-text_weight-bold']")
-
-            if temp_title is None:
-                temp_title = page.query_selector("//div[@class='b-text_copy-5 b-text_weight-light b-text_style-uppercase']")
-
-            title = temp_title.inner_text()
-
-            data = []
-            for item in ua:
-                room_type = item.query_selector("//div[@data-js='room-title']").inner_text()
-                points = item.query_selector("//div[@class='rate b-text_weight-bold b-text_display-2']").inner_text()
+                room_locator = page.locator('.room-rate-card')
+            except Exception as e:
+                    pass
+        
+        data = []
+        if room_locator:
+            title = page.locator('.hotel-detail-header-title-row').inner_text()
+            for i in range(room_locator.count()):
+                item = room_locator.nth(i)
+                room_type = item.locator('.room-title').inner_text()
+                points = item.locator('.points-rate').inner_text()
+                if 'Standard Room Free Night\n' not in points:
+                    continue
+                points = points.replace('Standard Room Free Night\n', '')
                 check_in = dates[0]
                 check_out = dates[1]
                 data.append((check_in, check_out, title, room_type, points))
