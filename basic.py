@@ -38,14 +38,17 @@ def load_web(URL, df, dates):
             title = page.locator('.hotel-detail-header-title-row').inner_text()
             for i in range(room_locator.count()):
                 item = room_locator.nth(i)
-                room_type = item.locator('.room-title').inner_text()
-                points = item.locator('.points-rate').inner_text()
-                if 'Standard Room Free Night\n' not in points:
-                    continue
-                points = points.replace('Standard Room Free Night\n', '')
-                check_in = dates[0]
-                check_out = dates[1]
-                data.append((check_in, check_out, title, room_type, points))
+                try:
+                    room_type = item.locator('.room-title').inner_text()
+                    points = item.locator('.points-rate').inner_text()
+                    if 'Standard Room Free Night\n' not in points:
+                        continue
+                    points = points.replace('Standard Room Free Night\n', '')
+                    check_in = dates[0]
+                    check_out = dates[1]
+                    data.append((check_in, check_out, title, room_type, points))
+                except Exception as e:
+                    print(e)
         else:
             data = []
             check_in = dates[0]

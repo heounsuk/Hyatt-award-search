@@ -43,7 +43,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>tvllt</string>
+    <string>itmph</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
